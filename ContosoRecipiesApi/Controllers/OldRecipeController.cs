@@ -1,39 +1,44 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ContosoRecipiesApi.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContosoRecipiesApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RecipeController : ControllerBase
+    public class OldRecipeController : ControllerBase
     {
         [HttpPost]
-        public ActionResult CreateRecipes()
+        public ActionResult CreateRecipes([FromBody] Recipe newRecipe)
         {
             // Create logic => return true / ok
             var successfullyCreated = true;
 
-            if(!successfullyCreated)
+            if (!successfullyCreated)
             {
                 return BadRequest();
             }
 
-            return Created("[controller]", new object());
+            return Created("[controller]", newRecipe);
         }
-                
-        
-        [HttpGet]
-        public ActionResult GetRecipes()
-        {
-            string[] recipes = { "recipe1", "recipe2" };            
-            // Get recipes
 
-            if(recipes == null)
+        [HttpGet]
+        public ActionResult GetRecipes([FromQuery] int count)
+        {
+            Recipe[] recipes =
+            {
+                new() {Title = "Recipe1", Description = "Recipe1 description"},
+                new() {Title = "Recipe2", Description = "Recipe1 description"},
+                new() {Title = "Recipe3", Description = "Recipe1 description"},
+            };
+
+            // Get recipes
+            if (recipes == null)
             {
                 return NotFound();
             }
-            
-            return Ok(recipes);
+
+            return Ok(recipes.Take(count));
         }
 
         [HttpDelete("{id}")] // api/Recipe/50
@@ -56,7 +61,7 @@ namespace ContosoRecipiesApi.Controllers
             // Update logic - entire entity / object / model
             var successfullyUpdated = true;
 
-            if(!successfullyUpdated)
+            if (!successfullyUpdated)
             {
                 return NotFound();
             }
@@ -77,6 +82,5 @@ namespace ContosoRecipiesApi.Controllers
 
             return NoContent();
         }
-
     }
 }

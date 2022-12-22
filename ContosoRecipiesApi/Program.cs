@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using ContosoRecipiesApi.Data;
 
 namespace ContosoRecipiesApi
 {
@@ -6,6 +9,8 @@ namespace ContosoRecipiesApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<DataContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ContosoRecipiesApiContext") ?? throw new InvalidOperationException("Connection string 'ContosoRecipiesApiContext' not found.")));
 
             // Add services to the container.
 
@@ -26,7 +31,6 @@ namespace ContosoRecipiesApi
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
