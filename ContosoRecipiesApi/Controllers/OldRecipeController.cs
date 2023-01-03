@@ -11,7 +11,7 @@ namespace ContosoRecipiesApi.Controllers
         [HttpPost]
         public ActionResult CreateRecipes([FromBody] Recipe newRecipe)
         {
-            // Create logic => return true / ok
+            // Create logic => return true /  ok
             var successfullyCreated = true;
 
             if (!successfullyCreated)
