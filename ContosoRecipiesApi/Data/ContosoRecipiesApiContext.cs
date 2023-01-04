@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using ContosoRecipiesApi.Configuration;
 using ContosoRecipiesApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoRecipiesApi.Data
 {
@@ -14,6 +11,19 @@ namespace ContosoRecipiesApi.Data
         {
         }
 
-        public DbSet<Recipe> Recipe { get; set; } = default!;
+        public DbSet<Recipe> Recipes { get; set; } = default!;
+
+        public DbSet<Ingredient> Directions { get; set; } = default!;
+
+        public DbSet<Ingredient> Ingredients { get; set; } = default!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new RecipeConfiguration());
+            modelBuilder.ApplyConfiguration(new DirectionConfiguration());
+            modelBuilder.ApplyConfiguration(new IngredientConfiguration());
+        }
+
+        public DbSet<ContosoRecipiesApi.Models.Direction> Direction { get; set; } = default!;
     }
 }

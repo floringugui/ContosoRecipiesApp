@@ -25,22 +25,22 @@ namespace ContosoRecipiesApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipe()
         {
-            if (_context.Recipe == null)
+            if (_context.Recipes == null)
             {
                 return NotFound();
             }
-            return await _context.Recipe.ToListAsync();
+            return await _context.Recipes.ToListAsync();
         }
 
         // GET: api/Recipes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipe(int id)
         {
-            if (_context.Recipe == null)
+            if (_context.Recipes == null)
             {
                 return NotFound();
             }
-            var recipe = await _context.Recipe.FindAsync(id);
+            var recipe = await _context.Recipes.FindAsync(id);
 
             if (recipe == null)
             {
@@ -86,11 +86,11 @@ namespace ContosoRecipiesApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
         {
-            if (_context.Recipe == null)
+            if (_context.Recipes == null)
             {
                 return Problem("Entity set 'ContosoRecipiesApiContext.Recipe'  is null.");
             }
-            _context.Recipe.Add(recipe);
+            _context.Recipes.Add(recipe);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
@@ -100,17 +100,17 @@ namespace ContosoRecipiesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
-            if (_context.Recipe == null)
+            if (_context.Recipes == null)
             {
                 return NotFound();
             }
-            var recipe = await _context.Recipe.FindAsync(id);
+            var recipe = await _context.Recipes.FindAsync(id);
             if (recipe == null)
             {
                 return NotFound();
             }
 
-            _context.Recipe.Remove(recipe);
+            _context.Recipes.Remove(recipe);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -118,7 +118,7 @@ namespace ContosoRecipiesApi.Controllers
 
         private bool RecipeExists(int id)
         {
-            return (_context.Recipe?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Recipes?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
