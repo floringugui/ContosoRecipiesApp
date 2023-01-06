@@ -14,7 +14,7 @@ namespace ContosoRecipiesApi.Models
 
         public DateTime Updated { get; set; }
 
-        //public IEnumerable<Direction> Directions { get; set; }
-        //public IEnumerable<Ingredient> Ingredients { get; set; }
+        public IEnumerable<Direction> Directions { get; set; }
+        public IEnumerable<Ingredient> Ingredients { get; set; }
     }
 }

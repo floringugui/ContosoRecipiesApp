@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ContosoRecipiesApi.Data;
+using ContosoRecipiesApi.DAL;
 
 namespace ContosoRecipiesApi
 {
@@ -12,7 +13,7 @@ namespace ContosoRecipiesApi
             builder.Services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ContosoRecipiesApiContext") ?? throw new InvalidOperationException("Connection string 'ContosoRecipiesApiContext' not found.")));
 
-            // Add services to the container.
+            builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

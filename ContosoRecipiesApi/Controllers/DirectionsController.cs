@@ -25,22 +25,22 @@ namespace ContosoRecipiesApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Direction>>> GetDirection()
         {
-          if (_context.Direction == null)
-          {
-              return NotFound();
-          }
-            return await _context.Direction.ToListAsync();
+            if (_context.Directions == null)
+            {
+                return NotFound();
+            }
+            return await _context.Directions.ToListAsync();
         }
 
         // GET: api/Directions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Direction>> GetDirection(int id)
         {
-          if (_context.Direction == null)
-          {
-              return NotFound();
-          }
-            var direction = await _context.Direction.FindAsync(id);
+            if (_context.Directions == null)
+            {
+                return NotFound();
+            }
+            var direction = await _context.Directions.FindAsync(id);
 
             if (direction == null)
             {
@@ -86,11 +86,11 @@ namespace ContosoRecipiesApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Direction>> PostDirection(Direction direction)
         {
-          if (_context.Direction == null)
-          {
-              return Problem("Entity set 'DataContext.Direction'  is null.");
-          }
-            _context.Direction.Add(direction);
+            if (_context.Directions == null)
+            {
+                return Problem("Entity set 'Datacontext.Directions'  is null.");
+            }
+            _context.Directions.Add(direction);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDirection", new { id = direction.Id }, direction);
@@ -100,17 +100,17 @@ namespace ContosoRecipiesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDirection(int id)
         {
-            if (_context.Direction == null)
+            if (_context.Directions == null)
             {
                 return NotFound();
             }
-            var direction = await _context.Direction.FindAsync(id);
+            var direction = await _context.Directions.FindAsync(id);
             if (direction == null)
             {
                 return NotFound();
             }
 
-            _context.Direction.Remove(direction);
+            _context.Directions.Remove(direction);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -118,7 +118,7 @@ namespace ContosoRecipiesApi.Controllers
 
         private bool DirectionExists(int id)
         {
-            return (_context.Direction?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Directions?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

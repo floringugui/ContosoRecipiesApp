@@ -25,22 +25,22 @@ namespace ContosoRecipiesApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetDirections()
         {
-          if (_context.Directions == null)
-          {
-              return NotFound();
-          }
-            return await _context.Directions.ToListAsync();
+            if (_context.Ingredients == null)
+            {
+                return NotFound();
+            }
+            return await _context.Ingredients.ToListAsync();
         }
 
         // GET: api/Ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(int id)
         {
-          if (_context.Directions == null)
-          {
-              return NotFound();
-          }
-            var ingredient = await _context.Directions.FindAsync(id);
+            if (_context.Ingredients == null)
+            {
+                return NotFound();
+            }
+            var ingredient = await _context.Ingredients.FindAsync(id);
 
             if (ingredient == null)
             {
@@ -86,11 +86,11 @@ namespace ContosoRecipiesApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
-          if (_context.Directions == null)
-          {
-              return Problem("Entity set 'DataContext.Directions'  is null.");
-          }
-            _context.Directions.Add(ingredient);
+            if (_context.Ingredients == null)
+            {
+                return Problem("Entity set 'Datacontext.Directionss'  is null.");
+            }
+            _context.Ingredients.Add(ingredient);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
@@ -100,17 +100,17 @@ namespace ContosoRecipiesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIngredient(int id)
         {
-            if (_context.Directions == null)
+            if (_context.Ingredients == null)
             {
                 return NotFound();
             }
-            var ingredient = await _context.Directions.FindAsync(id);
+            var ingredient = await _context.Ingredients.FindAsync(id);
             if (ingredient == null)
             {
                 return NotFound();
             }
 
-            _context.Directions.Remove(ingredient);
+            _context.Ingredients.Remove(ingredient);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -118,7 +118,7 @@ namespace ContosoRecipiesApi.Controllers
 
         private bool IngredientExists(int id)
         {
-            return (_context.Directions?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Ingredients?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
