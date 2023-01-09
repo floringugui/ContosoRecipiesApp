@@ -24,7 +24,10 @@ namespace ContosoRecipiesApi.DAL
 
         public async Task<IEnumerable<Recipe>> GetRecipes()
         {
-            return await _dataContext.Recipes.ToListAsync();
+            return await _dataContext.Recipes
+                .Include(x => x.Directions)
+                .Include(x => x.Ingredients)
+                .ToListAsync();
         }
 
         public async Task<bool> RecipeExists(int recipeId)
@@ -40,11 +43,14 @@ namespace ContosoRecipiesApi.DAL
 
         public async Task UpdateRecipe(Recipe recipe)
         {
-            var recipeEntity = await GetRecipeById(recipe.Id);
+            _dataContext.Recipes.Attach(recipe);
+            _dataContext.Entry(recipe).State = EntityState.Modified;
 
-            recipeEntity.Title = recipeEntity.Title;
-            recipeEntity.Description = recipeEntity.Description;
-            recipeEntity.Updated = DateTime.Now;
+            //var recipeEntity = await GetRecipeById(recipe.Id);
+
+            //recipeEntity.Title = recipeEntity.Title;
+            //recipeEntity.Description = recipeEntity.Description;
+            //recipeEntity.Updated = DateTime.Now;
         }
 
         public async Task DeleteRecipe(int recipeId)

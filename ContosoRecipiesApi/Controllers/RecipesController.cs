@@ -1,4 +1,5 @@
 ﻿using ContosoRecipiesApi.DAL;
+using ContosoRecipiesApi.Data;
 using ContosoRecipiesApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,18 +10,18 @@ namespace ContosoRecipiesApi.Controllers
     [ApiController]
     public class RecipesController : ControllerBase
     {
-        private readonly IRecipeRepository _recipeRepository;
+        private readonly GenericRepository<Recipe> _recipeRepository;
 
-        public RecipesController(IRecipeRepository recipeRepository)
+        public RecipesController(DataContext dataContext)
         {
-            _recipeRepository = recipeRepository;
+            _recipeRepository = new GenericRepository<Recipe>(dataContext);
         }
 
         // GET: api/Recipes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
         {
-            var recipes = await _recipeRepository.GetRecipes();
+            var recipes = await _recipeRepository.Get(includeProperties: "Directions,Ingredients");
 
             if (recipes == null)
             {
@@ -34,7 +35,7 @@ namespace ContosoRecipiesApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipe(int id)
         {
-            var recipe = await _recipeRepository.GetRecipeById(id);
+            var recipe = await _recipeRepository.GetById(id);
 
             if (recipe == null)
             {
@@ -54,7 +55,7 @@ namespace ContosoRecipiesApi.Controllers
                 return BadRequest();
             }
 
-            await _recipeRepository.UpdateRecipe(recipe);
+            await _recipeRepository.Update(recipe);
 
             try
             {
@@ -80,7 +81,7 @@ namespace ContosoRecipiesApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
         {
-            await _recipeRepository.InsertRecipe(recipe);
+            await _recipeRepository.Insert(recipe);
             await _recipeRepository.Save();
 
             return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
@@ -90,7 +91,7 @@ namespace ContosoRecipiesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
-            await _recipeRepository.DeleteRecipe(id);
+            await _recipeRepository.Delete(id);
             await _recipeRepository.Save();
 
             return NoContent();
@@ -98,7 +99,7 @@ namespace ContosoRecipiesApi.Controllers
 
         private async Task<bool> RecipeExists(int id)
         {
-            return await _recipeRepository.RecipeExists(id);
+            return await _recipeRepository.Exists(id);
         }
     }
 }

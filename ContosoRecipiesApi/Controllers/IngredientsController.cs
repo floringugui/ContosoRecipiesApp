@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ContosoRecipiesApi.Data;
 using ContosoRecipiesApi.Models;
+using ContosoRecipiesApi.DAL;
 
 namespace ContosoRecipiesApi.Controllers
 {
@@ -14,40 +15,38 @@ namespace ContosoRecipiesApi.Controllers
     [ApiController]
     public class IngredientsController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly GenericRepository<Ingredient> _ingredientRepository;
 
         public IngredientsController(DataContext context)
         {
-            _context = context;
+            _ingredientRepository = new GenericRepository<Ingredient>(context);
         }
 
         // GET: api/Ingredients
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetDirections()
         {
-            if (_context.Ingredients == null)
+            var ingredients = await _ingredientRepository.Get();
+
+            if (ingredients == null)
             {
                 return NotFound();
             }
-            return await _context.Ingredients.ToListAsync();
+            return Ok(ingredients);
         }
 
         // GET: api/Ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(int id)
         {
-            if (_context.Ingredients == null)
-            {
-                return NotFound();
-            }
-            var ingredient = await _context.Ingredients.FindAsync(id);
+            var ingredient = _ingredientRepository.GetById(id);
 
             if (ingredient == null)
             {
                 return NotFound();
             }
 
-            return ingredient;
+            return Ok(ingredient);
         }
 
         // PUT: api/Ingredients/5
@@ -60,15 +59,15 @@ namespace ContosoRecipiesApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(ingredient).State = EntityState.Modified;
+            _ingredientRepository.Update(ingredient);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _ingredientRepository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!IngredientExists(id))
+                if (!await IngredientExists(id))
                 {
                     return NotFound();
                 }
@@ -86,12 +85,8 @@ namespace ContosoRecipiesApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
-            if (_context.Ingredients == null)
-            {
-                return Problem("Entity set 'Datacontext.Directionss'  is null.");
-            }
-            _context.Ingredients.Add(ingredient);
-            await _context.SaveChangesAsync();
+            await _ingredientRepository.Insert(ingredient);
+            await _ingredientRepository.Save();
 
             return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
         }
@@ -100,25 +95,15 @@ namespace ContosoRecipiesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIngredient(int id)
         {
-            if (_context.Ingredients == null)
-            {
-                return NotFound();
-            }
-            var ingredient = await _context.Ingredients.FindAsync(id);
-            if (ingredient == null)
-            {
-                return NotFound();
-            }
-
-            _context.Ingredients.Remove(ingredient);
-            await _context.SaveChangesAsync();
+            await _ingredientRepository.Delete(id);
+            await _ingredientRepository.Save();
 
             return NoContent();
         }
 
-        private bool IngredientExists(int id)
+        private async Task<bool> IngredientExists(int id)
         {
-            return (_context.Ingredients?.Any(e => e.Id == id)).GetValueOrDefault();
+            return await _ingredientRepository.Exists(id);
         }
     }
 }
