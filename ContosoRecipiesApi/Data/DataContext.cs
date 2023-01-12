@@ -13,7 +13,7 @@ namespace ContosoRecipiesApi.Data
 
         public DbSet<Recipe> Recipes { get; set; } = default!;
 
-        public DbSet<Ingredient> Directions { get; set; } = default!;
+        public DbSet<Direction> Directions { get; set; } = default!;
 
         public DbSet<Ingredient> Ingredients { get; set; } = default!;
 
@@ -23,7 +23,5 @@ namespace ContosoRecipiesApi.Data
             modelBuilder.ApplyConfiguration(new DirectionConfiguration());
             modelBuilder.ApplyConfiguration(new IngredientConfiguration());
         }
-
-        public DbSet<ContosoRecipiesApi.Models.Direction> Direction { get; set; } = default!;
     }
 }

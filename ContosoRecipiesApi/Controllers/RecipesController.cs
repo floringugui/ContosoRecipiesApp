@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using ContosoRecipiesApi.DAL;
 using ContosoRecipiesApi.Data;
 using ContosoRecipiesApi.Models;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoRecipiesApi.Controllers
 {
@@ -14,44 +11,48 @@ namespace ContosoRecipiesApi.Controllers
     [ApiController]
     public class RecipesController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly UnitOfWork _unitOfWork;
 
-        public RecipesController(DataContext context)
+        public RecipesController(DataContext dataContext)
         {
-            _context = context;
+            _unitOfWork = new UnitOfWork(dataContext);
         }
 
-        // GET: api/Recipes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipe()
+        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes([FromQuery] int count)
         {
-            if (_context.Recipes == null)
+            if (count <= 0)
+            {
+                throw new ArgumentException(nameof(count));
+            }
+
+            var recipes = await _unitOfWork.RecipeRepository.Get(includeProperties: "Directions,Ingredients");
+
+            if (recipes == null)
             {
                 return NotFound();
             }
-            return await _context.Recipes.ToListAsync();
+
+            return Ok(recipes);
         }
 
-        // GET: api/Recipes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipe(int id)
         {
-            if (_context.Recipes == null)
-            {
-                return NotFound();
-            }
-            var recipe = await _context.Recipes.FindAsync(id);
+            var recipe = await _unitOfWork.RecipeRepository.GetById(id);
+            recipe.Directions = await _unitOfWork.DirectionRepository.GetByRecipeId(id);
+
+            // TODO: Add the same logic for the ingredients similar to the directions logic in the previous line
+            //recipe.Ingredients = await _unitOfWork.DirectionRepository.GetByRecipeId(id);
 
             if (recipe == null)
             {
                 return NotFound();
             }
 
-            return recipe;
+            return Ok(recipe);
         }
 
-        // PUT: api/Recipes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRecipe(int id, Recipe recipe)
         {
@@ -60,15 +61,15 @@ namespace ContosoRecipiesApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(recipe).State = EntityState.Modified;
+            await _unitOfWork.RecipeRepository.Update(recipe);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RecipeExists(id))
+                if (!await RecipeExists(id))
                 {
                     return NotFound();
                 }
@@ -81,44 +82,42 @@ namespace ContosoRecipiesApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Recipes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchRecipe(int id, JsonPatchDocument<Recipe> recipeUpdates)
         {
-            if (_context.Recipes == null)
-            {
-                return Problem("Entity set 'ContosoRecipiesApiContext.Recipe'  is null.");
-            }
-            _context.Recipes.Add(recipe);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
-        }
-
-        // DELETE: api/Recipes/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRecipe(int id)
-        {
-            if (_context.Recipes == null)
-            {
-                return NotFound();
-            }
-            var recipe = await _context.Recipes.FindAsync(id);
+            var recipe = await _unitOfWork.RecipeRepository.GetById(id);
             if (recipe == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            _context.Recipes.Remove(recipe);
-            await _context.SaveChangesAsync();
+            recipeUpdates.ApplyTo(recipe);
+            await _unitOfWork.Save();
 
             return NoContent();
         }
 
-        private bool RecipeExists(int id)
+        [HttpPost]
+        public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
         {
-            return (_context.Recipes?.Any(e => e.Id == id)).GetValueOrDefault();
+            await _unitOfWork.RecipeRepository.Insert(recipe);
+            await _unitOfWork.Save();
+
+            return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRecipe(int id)
+        {
+            await _unitOfWork.RecipeRepository.Delete(id);
+            await _unitOfWork.Save();
+
+            return NoContent();
+        }
+
+        private async Task<bool> RecipeExists(int id)
+        {
+            return await _unitOfWork.RecipeRepository.Exists(id);
         }
     }
 }

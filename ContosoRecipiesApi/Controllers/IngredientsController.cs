@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using ContosoRecipiesApi.DAL;
 using ContosoRecipiesApi.Data;
 using ContosoRecipiesApi.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoRecipiesApi.Controllers
 {
@@ -14,44 +10,38 @@ namespace ContosoRecipiesApi.Controllers
     [ApiController]
     public class IngredientsController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly GenericRepository<Ingredient> _ingredientRepository;
 
         public IngredientsController(DataContext context)
         {
-            _context = context;
+            _ingredientRepository = new GenericRepository<Ingredient>(context);
         }
 
-        // GET: api/Ingredients
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetDirections()
         {
-          if (_context.Directions == null)
-          {
-              return NotFound();
-          }
-            return await _context.Directions.ToListAsync();
+            var ingredients = await _ingredientRepository.Get();
+
+            if (ingredients == null)
+            {
+                return NotFound();
+            }
+            return Ok(ingredients);
         }
 
-        // GET: api/Ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(int id)
         {
-          if (_context.Directions == null)
-          {
-              return NotFound();
-          }
-            var ingredient = await _context.Directions.FindAsync(id);
+            var ingredient = _ingredientRepository.GetById(id);
 
             if (ingredient == null)
             {
                 return NotFound();
             }
 
-            return ingredient;
+            return Ok(ingredient);
         }
 
-        // PUT: api/Ingredients/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIngredient(int id, Ingredient ingredient)
         {
@@ -60,15 +50,15 @@ namespace ContosoRecipiesApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(ingredient).State = EntityState.Modified;
+            _ingredientRepository.Update(ingredient);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _ingredientRepository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!IngredientExists(id))
+                if (!await IngredientExists(id))
                 {
                     return NotFound();
                 }
@@ -81,44 +71,27 @@ namespace ContosoRecipiesApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Ingredients
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
-          if (_context.Directions == null)
-          {
-              return Problem("Entity set 'DataContext.Directions'  is null.");
-          }
-            _context.Directions.Add(ingredient);
-            await _context.SaveChangesAsync();
+            await _ingredientRepository.Insert(ingredient);
+            await _ingredientRepository.Save();
 
             return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
         }
 
-        // DELETE: api/Ingredients/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIngredient(int id)
         {
-            if (_context.Directions == null)
-            {
-                return NotFound();
-            }
-            var ingredient = await _context.Directions.FindAsync(id);
-            if (ingredient == null)
-            {
-                return NotFound();
-            }
-
-            _context.Directions.Remove(ingredient);
-            await _context.SaveChangesAsync();
+            await _ingredientRepository.Delete(id);
+            await _ingredientRepository.Save();
 
             return NoContent();
         }
 
-        private bool IngredientExists(int id)
+        private async Task<bool> IngredientExists(int id)
         {
-            return (_context.Directions?.Any(e => e.Id == id)).GetValueOrDefault();
+            return await _ingredientRepository.Exists(id);
         }
     }
 }
