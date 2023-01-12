@@ -1,6 +1,7 @@
 ﻿using ContosoRecipiesApi.DAL;
 using ContosoRecipiesApi.Data;
 using ContosoRecipiesApi.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,18 +11,22 @@ namespace ContosoRecipiesApi.Controllers
     [ApiController]
     public class RecipesController : ControllerBase
     {
-        private readonly GenericRepository<Recipe> _recipeRepository;
+        private readonly UnitOfWork _unitOfWork;
 
         public RecipesController(DataContext dataContext)
         {
-            _recipeRepository = new GenericRepository<Recipe>(dataContext);
+            _unitOfWork = new UnitOfWork(dataContext);
         }
 
-        // GET: api/Recipes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes([FromQuery] int count)
         {
-            var recipes = await _recipeRepository.Get(includeProperties: "Directions,Ingredients");
+            if (count <= 0)
+            {
+                throw new ArgumentException(nameof(count));
+            }
+
+            var recipes = await _unitOfWork.RecipeRepository.Get(includeProperties: "Directions,Ingredients");
 
             if (recipes == null)
             {
@@ -31,11 +36,14 @@ namespace ContosoRecipiesApi.Controllers
             return Ok(recipes);
         }
 
-        // GET: api/Recipes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipe(int id)
         {
-            var recipe = await _recipeRepository.GetById(id);
+            var recipe = await _unitOfWork.RecipeRepository.GetById(id);
+            recipe.Directions = await _unitOfWork.DirectionRepository.GetByRecipeId(id);
+
+            // TODO: Add the same logic for the ingredients similar to the directions logic in the previous line
+            //recipe.Ingredients = await _unitOfWork.DirectionRepository.GetByRecipeId(id);
 
             if (recipe == null)
             {
@@ -45,8 +53,6 @@ namespace ContosoRecipiesApi.Controllers
             return Ok(recipe);
         }
 
-        // PUT: api/Recipes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRecipe(int id, Recipe recipe)
         {
@@ -55,11 +61,11 @@ namespace ContosoRecipiesApi.Controllers
                 return BadRequest();
             }
 
-            await _recipeRepository.Update(recipe);
+            await _unitOfWork.RecipeRepository.Update(recipe);
 
             try
             {
-                await _recipeRepository.Save();
+                await _unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,30 +82,42 @@ namespace ContosoRecipiesApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Recipes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchRecipe(int id, JsonPatchDocument<Recipe> recipeUpdates)
+        {
+            var recipe = await _unitOfWork.RecipeRepository.GetById(id);
+            if (recipe == null)
+            {
+                return BadRequest();
+            }
+
+            recipeUpdates.ApplyTo(recipe);
+            await _unitOfWork.Save();
+
+            return NoContent();
+        }
+
         [HttpPost]
         public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
         {
-            await _recipeRepository.Insert(recipe);
-            await _recipeRepository.Save();
+            await _unitOfWork.RecipeRepository.Insert(recipe);
+            await _unitOfWork.Save();
 
             return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
         }
 
-        // DELETE: api/Recipes/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
-            await _recipeRepository.Delete(id);
-            await _recipeRepository.Save();
+            await _unitOfWork.RecipeRepository.Delete(id);
+            await _unitOfWork.Save();
 
             return NoContent();
         }
 
         private async Task<bool> RecipeExists(int id)
         {
-            return await _recipeRepository.Exists(id);
+            return await _unitOfWork.RecipeRepository.Exists(id);
         }
     }
 }

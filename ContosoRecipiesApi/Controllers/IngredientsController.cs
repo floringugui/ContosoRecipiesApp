@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using ContosoRecipiesApi.DAL;
 using ContosoRecipiesApi.Data;
 using ContosoRecipiesApi.Models;
-using ContosoRecipiesApi.DAL;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoRecipiesApi.Controllers
 {
@@ -22,7 +17,6 @@ namespace ContosoRecipiesApi.Controllers
             _ingredientRepository = new GenericRepository<Ingredient>(context);
         }
 
-        // GET: api/Ingredients
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetDirections()
         {
@@ -35,7 +29,6 @@ namespace ContosoRecipiesApi.Controllers
             return Ok(ingredients);
         }
 
-        // GET: api/Ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(int id)
         {
@@ -49,8 +42,6 @@ namespace ContosoRecipiesApi.Controllers
             return Ok(ingredient);
         }
 
-        // PUT: api/Ingredients/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIngredient(int id, Ingredient ingredient)
         {
@@ -80,8 +71,6 @@ namespace ContosoRecipiesApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Ingredients
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
@@ -91,7 +80,6 @@ namespace ContosoRecipiesApi.Controllers
             return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
         }
 
-        // DELETE: api/Ingredients/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIngredient(int id)
         {

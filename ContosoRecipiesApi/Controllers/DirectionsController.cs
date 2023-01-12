@@ -17,7 +17,6 @@ namespace ContosoRecipiesApi.Controllers
             _directionRepository = new GenericRepository<Direction>(context);
         }
 
-        // GET: api/Directions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Direction>>> GetDirections()
         {
@@ -31,7 +30,6 @@ namespace ContosoRecipiesApi.Controllers
             return Ok(directions);
         }
 
-        // GET: api/Directions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Direction>> GetDirection(int id)
         {
@@ -45,8 +43,6 @@ namespace ContosoRecipiesApi.Controllers
             return Ok(direction);
         }
 
-        // PUT: api/Directions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDirection(int id, Direction direction)
         {
@@ -76,8 +72,6 @@ namespace ContosoRecipiesApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Directions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Direction>> PostDirection(Direction direction)
         {
@@ -87,7 +81,6 @@ namespace ContosoRecipiesApi.Controllers
             return CreatedAtAction("GetDirection", new { id = direction.Id }, direction);
         }
 
-        // DELETE: api/Directions/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDirection(int id)
         {

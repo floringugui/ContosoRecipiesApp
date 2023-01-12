@@ -4,10 +4,10 @@ using System.Linq.Expressions;
 
 namespace ContosoRecipiesApi.DAL
 {
-    public class GenericRepository<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        internal DataContext _dataContext;
-        internal DbSet<TEntity> _dbSet;
+        protected DataContext _dataContext;
+        protected DbSet<TEntity> _dbSet;
 
         private bool _disposed = false;
 
