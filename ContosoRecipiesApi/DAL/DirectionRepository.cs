@@ -11,7 +11,9 @@ namespace ContosoRecipiesApi.DAL
 
         public async Task<IEnumerable<Direction>> GetByRecipeId(int id)
         {
-            var directions = await _dataContext.Directions.Where(x => x.RecipeId == id).ToListAsync();
+            var directions = await _dataContext.Directions
+                .Where(x => x.RecipeId == id)
+                .ToListAsync();
 
             return directions;
         }

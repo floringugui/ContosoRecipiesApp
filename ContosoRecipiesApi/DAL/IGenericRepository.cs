@@ -17,6 +17,8 @@ namespace ContosoRecipiesApi.DAL
 
         public Task Delete(TEntity entityToDelete);
 
+        public Task Delete(object id);
+
         public Task Update(TEntity entityToUpdate);
 
         public Task Save();
