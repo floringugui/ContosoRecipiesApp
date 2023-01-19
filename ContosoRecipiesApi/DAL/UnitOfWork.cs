@@ -3,12 +3,12 @@ using ContosoRecipiesApi.Models;
 
 namespace ContosoRecipiesApi.DAL
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IDisposable, IUnitOfWork
     {
         private readonly DataContext _dataContext;
-        private GenericRepository<Recipe> _recipeRepository;
+        private IRecipeRepository _recipeRepository;
         private IDirectionRepository _directionRepository;
-        private GenericRepository<Ingredient> _ingredientRepository;
+        private IIngredientRepository _ingredientRepository;
 
         private bool _disposed = false;
 
@@ -17,13 +17,13 @@ namespace ContosoRecipiesApi.DAL
             _dataContext = dataContext;
         }
 
-        public GenericRepository<Recipe> RecipeRepository
+        public IRecipeRepository RecipeRepository
         {
             get
             {
                 if (_recipeRepository == null)
                 {
-                    _recipeRepository = new GenericRepository<Recipe>(_dataContext);
+                    _recipeRepository = new RecipeRepository(_dataContext);
                 }
 
                 return _recipeRepository;
@@ -43,13 +43,13 @@ namespace ContosoRecipiesApi.DAL
             }
         }
 
-        public GenericRepository<Ingredient> IngredientRepository
+        public IIngredientRepository IngredientRepository
         {
             get
             {
                 if (_ingredientRepository == null)
                 {
-                    _ingredientRepository = new GenericRepository<Ingredient>(_dataContext);
+                    _ingredientRepository = new IngredientRepository(_dataContext);
                 }
 
                 return _ingredientRepository;

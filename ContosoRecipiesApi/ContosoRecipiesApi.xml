@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ContosoRecipiesApi</name>
+    </assembly>
+    <members>
+        <member name="M:ContosoRecipiesApi.Controllers.RecipesController.GetRecipes(System.Int32)">
+            <summary>
+            Return a list of all the recipes - changed
+            </summary>
+            <param name="count"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="T:ContosoRecipiesApi.Migrations.InitialCreationMigration">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.InitialCreationMigration.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.InitialCreationMigration.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.InitialCreationMigration.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ContosoRecipiesApi.Migrations.AddDirectionsAndIngredientsTables">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddDirectionsAndIngredientsTables.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddDirectionsAndIngredientsTables.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddDirectionsAndIngredientsTables.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ContosoRecipiesApi.Migrations.AddRecipeRightRecords">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddRecipeRightRecords.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddRecipeRightRecords.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddRecipeRightRecords.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ContosoRecipiesApi.Migrations.AddDirectionsAndIngredientsRecords">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddDirectionsAndIngredientsRecords.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddDirectionsAndIngredientsRecords.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ContosoRecipiesApi.Migrations.AddDirectionsAndIngredientsRecords.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

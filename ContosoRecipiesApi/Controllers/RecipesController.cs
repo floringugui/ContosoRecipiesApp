@@ -4,21 +4,32 @@ using ContosoRecipiesApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mime;
 
 namespace ContosoRecipiesApi.Controllers
 {
     [Route("api/[controller]")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
     [ApiController]
     public class RecipesController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RecipesController(DataContext dataContext)
+        public RecipesController(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = new UnitOfWork(dataContext);
+            _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Return a list of all the recipes - changed
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes([FromQuery] int count)
         {
             if (count <= 0)
