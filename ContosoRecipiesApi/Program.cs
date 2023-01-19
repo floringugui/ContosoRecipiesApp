@@ -19,9 +19,6 @@ namespace ContosoRecipiesApi
                     builder.Configuration.GetConnectionString("ContosoRecipiesApiContext")
                     ?? throw new InvalidOperationException("Connection string 'ContosoRecipiesApiContext' not found.")));
 
-            builder.Services.AddScoped<GenericRepository<Recipe>>();
-            builder.Services.AddScoped<GenericRepository<Direction>>();
-            builder.Services.AddScoped<GenericRepository<Ingredient>>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddControllers().AddNewtonsoftJson();
